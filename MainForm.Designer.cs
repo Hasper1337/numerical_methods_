@@ -45,6 +45,8 @@ namespace GraphPlotter
             lab62 = new GraphPlotter.Lab62Control();
             tabLab63 = new System.Windows.Forms.TabPage();
             lab63 = new GraphPlotter.Lab63Control();
+            tabLab78 = new System.Windows.Forms.TabPage();
+            lab78 = new GraphPlotter.Lab78Control();
             tabs.SuspendLayout();
             tabLab1.SuspendLayout();
             tabLab2.SuspendLayout();
@@ -54,6 +56,7 @@ namespace GraphPlotter
             tabLab61.SuspendLayout();
             tabLab62.SuspendLayout();
             tabLab63.SuspendLayout();
+            tabLab78.SuspendLayout();
             SuspendLayout();
             // 
             // tabs
@@ -66,6 +69,7 @@ namespace GraphPlotter
             tabs.Controls.Add(tabLab61);
             tabs.Controls.Add(tabLab62);
             tabs.Controls.Add(tabLab63);
+            tabs.Controls.Add(tabLab78);
             tabs.Dock = System.Windows.Forms.DockStyle.Fill;
             tabs.Location = new System.Drawing.Point(0, 0);
             tabs.Name = "tabs";
@@ -224,6 +228,25 @@ namespace GraphPlotter
             lab63.Name = "lab63";
             lab63.Size = new System.Drawing.Size(1170, 727);
             lab63.TabIndex = 0;
+            //
+            // tabLab78
+            //
+            tabLab78.Controls.Add(lab78);
+            tabLab78.Location = new System.Drawing.Point(4, 24);
+            tabLab78.Name = "tabLab78";
+            tabLab78.Padding = new System.Windows.Forms.Padding(3);
+            tabLab78.Size = new System.Drawing.Size(1176, 733);
+            tabLab78.TabIndex = 8;
+            tabLab78.Text = "7–8. Интеграл, производные, ОДУ";
+            tabLab78.UseVisualStyleBackColor = true;
+            //
+            // lab78
+            //
+            lab78.Dock = System.Windows.Forms.DockStyle.Fill;
+            lab78.Location = new System.Drawing.Point(3, 3);
+            lab78.Name = "lab78";
+            lab78.Size = new System.Drawing.Size(1170, 727);
+            lab78.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -234,7 +257,7 @@ namespace GraphPlotter
             MinimumSize = new System.Drawing.Size(900, 500);
             Name = "MainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            Text = "Лабораторные работы: визуализация, уравнения, экстремум, линейная алгебра, аппроксимация";
+            Text = "Лабораторные работы по численным методам — 1–8";
             tabs.ResumeLayout(false);
             tabLab1.ResumeLayout(false);
             tabLab2.ResumeLayout(false);
@@ -244,6 +267,7 @@ namespace GraphPlotter
             tabLab61.ResumeLayout(false);
             tabLab62.ResumeLayout(false);
             tabLab63.ResumeLayout(false);
+            tabLab78.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -258,6 +282,7 @@ namespace GraphPlotter
         private System.Windows.Forms.TabPage tabLab61;
         private System.Windows.Forms.TabPage tabLab62;
         private System.Windows.Forms.TabPage tabLab63;
+        private System.Windows.Forms.TabPage tabLab78;
         private Lab1Control lab1;
         private Lab2Control lab2;
         private Lab3Control lab3;
@@ -266,5 +291,6 @@ namespace GraphPlotter
         private Lab61Control lab61;
         private Lab62Control lab62;
         private Lab63Control lab63;
+        private Lab78Control lab78;
     }
 }
