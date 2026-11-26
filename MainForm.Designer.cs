@@ -39,24 +39,24 @@ namespace GraphPlotter
             lab4 = new GraphPlotter.Lab4Control();
             tabLab5 = new System.Windows.Forms.TabPage();
             lab5 = new GraphPlotter.Lab5Control();
-            tabLab61 = new System.Windows.Forms.TabPage();
-            lab61 = new GraphPlotter.Lab61Control();
-            tabLab62 = new System.Windows.Forms.TabPage();
-            lab62 = new GraphPlotter.Lab62Control();
             tabLab63 = new System.Windows.Forms.TabPage();
             lab63 = new GraphPlotter.Lab63Control();
-            tabLab78 = new System.Windows.Forms.TabPage();
-            lab78 = new GraphPlotter.Lab78Control();
+            tabLab7 = new System.Windows.Forms.TabPage();
+            lab7 = new GraphPlotter.Lab7Control();
+            tabLab81 = new System.Windows.Forms.TabPage();
+            lab81 = new GraphPlotter.Lab81Control();
+            tabLab82 = new System.Windows.Forms.TabPage();
+            lab82 = new GraphPlotter.Lab82Control();
             tabs.SuspendLayout();
             tabLab1.SuspendLayout();
             tabLab2.SuspendLayout();
             tabLab3.SuspendLayout();
             tabLab4.SuspendLayout();
             tabLab5.SuspendLayout();
-            tabLab61.SuspendLayout();
-            tabLab62.SuspendLayout();
             tabLab63.SuspendLayout();
-            tabLab78.SuspendLayout();
+            tabLab7.SuspendLayout();
+            tabLab81.SuspendLayout();
+            tabLab82.SuspendLayout();
             SuspendLayout();
             // 
             // tabs
@@ -66,10 +66,10 @@ namespace GraphPlotter
             tabs.Controls.Add(tabLab3);
             tabs.Controls.Add(tabLab4);
             tabs.Controls.Add(tabLab5);
-            tabs.Controls.Add(tabLab61);
-            tabs.Controls.Add(tabLab62);
             tabs.Controls.Add(tabLab63);
-            tabs.Controls.Add(tabLab78);
+            tabs.Controls.Add(tabLab7);
+            tabs.Controls.Add(tabLab81);
+            tabs.Controls.Add(tabLab82);
             tabs.Dock = System.Windows.Forms.DockStyle.Fill;
             tabs.Location = new System.Drawing.Point(0, 0);
             tabs.Name = "tabs";
@@ -172,44 +172,6 @@ namespace GraphPlotter
             lab5.Size = new System.Drawing.Size(1170, 727);
             lab5.TabIndex = 0;
             // 
-            // tabLab61
-            // 
-            tabLab61.Controls.Add(lab61);
-            tabLab61.Location = new System.Drawing.Point(4, 24);
-            tabLab61.Name = "tabLab61";
-            tabLab61.Padding = new System.Windows.Forms.Padding(3);
-            tabLab61.Size = new System.Drawing.Size(1176, 733);
-            tabLab61.TabIndex = 5;
-            tabLab61.Text = "6.1 Интерполяция";
-            tabLab61.UseVisualStyleBackColor = true;
-            // 
-            // lab61
-            // 
-            lab61.Dock = System.Windows.Forms.DockStyle.Fill;
-            lab61.Location = new System.Drawing.Point(3, 3);
-            lab61.Name = "lab61";
-            lab61.Size = new System.Drawing.Size(1170, 727);
-            lab61.TabIndex = 0;
-            // 
-            // tabLab62
-            // 
-            tabLab62.Controls.Add(lab62);
-            tabLab62.Location = new System.Drawing.Point(4, 24);
-            tabLab62.Name = "tabLab62";
-            tabLab62.Padding = new System.Windows.Forms.Padding(3);
-            tabLab62.Size = new System.Drawing.Size(1176, 733);
-            tabLab62.TabIndex = 6;
-            tabLab62.Text = "6.2 Кусочно-линейная";
-            tabLab62.UseVisualStyleBackColor = true;
-            // 
-            // lab62
-            // 
-            lab62.Dock = System.Windows.Forms.DockStyle.Fill;
-            lab62.Location = new System.Drawing.Point(3, 3);
-            lab62.Name = "lab62";
-            lab62.Size = new System.Drawing.Size(1170, 727);
-            lab62.TabIndex = 0;
-            // 
             // tabLab63
             // 
             tabLab63.Controls.Add(lab63);
@@ -217,7 +179,7 @@ namespace GraphPlotter
             tabLab63.Name = "tabLab63";
             tabLab63.Padding = new System.Windows.Forms.Padding(3);
             tabLab63.Size = new System.Drawing.Size(1176, 733);
-            tabLab63.TabIndex = 7;
+            tabLab63.TabIndex = 4;
             tabLab63.Text = "6.3 Наим. квадраты";
             tabLab63.UseVisualStyleBackColor = true;
             // 
@@ -229,24 +191,62 @@ namespace GraphPlotter
             lab63.Size = new System.Drawing.Size(1170, 727);
             lab63.TabIndex = 0;
             //
-            // tabLab78
+            // tabLab7
             //
-            tabLab78.Controls.Add(lab78);
-            tabLab78.Location = new System.Drawing.Point(4, 24);
-            tabLab78.Name = "tabLab78";
-            tabLab78.Padding = new System.Windows.Forms.Padding(3);
-            tabLab78.Size = new System.Drawing.Size(1176, 733);
-            tabLab78.TabIndex = 8;
-            tabLab78.Text = "7–8. Интеграл, производные, ОДУ";
-            tabLab78.UseVisualStyleBackColor = true;
+            tabLab7.Controls.Add(lab7);
+            tabLab7.Location = new System.Drawing.Point(4, 24);
+            tabLab7.Name = "tabLab7";
+            tabLab7.Padding = new System.Windows.Forms.Padding(3);
+            tabLab7.Size = new System.Drawing.Size(1176, 733);
+            tabLab7.TabIndex = 5;
+            tabLab7.Text = "7. Интеграл";
+            tabLab7.UseVisualStyleBackColor = true;
             //
-            // lab78
+            // lab7
             //
-            lab78.Dock = System.Windows.Forms.DockStyle.Fill;
-            lab78.Location = new System.Drawing.Point(3, 3);
-            lab78.Name = "lab78";
-            lab78.Size = new System.Drawing.Size(1170, 727);
-            lab78.TabIndex = 0;
+            lab7.Dock = System.Windows.Forms.DockStyle.Fill;
+            lab7.Location = new System.Drawing.Point(3, 3);
+            lab7.Name = "lab7";
+            lab7.Size = new System.Drawing.Size(1170, 727);
+            lab7.TabIndex = 0;
+            //
+            // tabLab81
+            //
+            tabLab81.Controls.Add(lab81);
+            tabLab81.Location = new System.Drawing.Point(4, 24);
+            tabLab81.Name = "tabLab81";
+            tabLab81.Padding = new System.Windows.Forms.Padding(3);
+            tabLab81.Size = new System.Drawing.Size(1176, 733);
+            tabLab81.TabIndex = 6;
+            tabLab81.Text = "8.1 Вторая производная";
+            tabLab81.UseVisualStyleBackColor = true;
+            //
+            // lab81
+            //
+            lab81.Dock = System.Windows.Forms.DockStyle.Fill;
+            lab81.Location = new System.Drawing.Point(3, 3);
+            lab81.Name = "lab81";
+            lab81.Size = new System.Drawing.Size(1170, 727);
+            lab81.TabIndex = 0;
+            //
+            // tabLab82
+            //
+            tabLab82.Controls.Add(lab82);
+            tabLab82.Location = new System.Drawing.Point(4, 24);
+            tabLab82.Name = "tabLab82";
+            tabLab82.Padding = new System.Windows.Forms.Padding(3);
+            tabLab82.Size = new System.Drawing.Size(1176, 733);
+            tabLab82.TabIndex = 7;
+            tabLab82.Text = "8.2 ОДУ";
+            tabLab82.UseVisualStyleBackColor = true;
+            //
+            // lab82
+            //
+            lab82.Dock = System.Windows.Forms.DockStyle.Fill;
+            lab82.Location = new System.Drawing.Point(3, 3);
+            lab82.Name = "lab82";
+            lab82.Size = new System.Drawing.Size(1170, 727);
+            lab82.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -264,10 +264,10 @@ namespace GraphPlotter
             tabLab3.ResumeLayout(false);
             tabLab4.ResumeLayout(false);
             tabLab5.ResumeLayout(false);
-            tabLab61.ResumeLayout(false);
-            tabLab62.ResumeLayout(false);
             tabLab63.ResumeLayout(false);
-            tabLab78.ResumeLayout(false);
+            tabLab7.ResumeLayout(false);
+            tabLab81.ResumeLayout(false);
+            tabLab82.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -279,18 +279,18 @@ namespace GraphPlotter
         private System.Windows.Forms.TabPage tabLab3;
         private System.Windows.Forms.TabPage tabLab4;
         private System.Windows.Forms.TabPage tabLab5;
-        private System.Windows.Forms.TabPage tabLab61;
-        private System.Windows.Forms.TabPage tabLab62;
         private System.Windows.Forms.TabPage tabLab63;
-        private System.Windows.Forms.TabPage tabLab78;
+        private System.Windows.Forms.TabPage tabLab7;
+        private System.Windows.Forms.TabPage tabLab81;
+        private System.Windows.Forms.TabPage tabLab82;
         private Lab1Control lab1;
         private Lab2Control lab2;
         private Lab3Control lab3;
         private Lab4Control lab4;
         private Lab5Control lab5;
-        private Lab61Control lab61;
-        private Lab62Control lab62;
         private Lab63Control lab63;
-        private Lab78Control lab78;
+        private Lab7Control lab7;
+        private Lab81Control lab81;
+        private Lab82Control lab82;
     }
 }

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace GraphPlotter;
 
-public sealed class Lab78Control : UserControl
+public abstract class Lab78Control : UserControl
 {
     // Вариант 21 из таблицы 1:
     // f(x) = x^2 - 3 - 2*cos(2*pi*x)
@@ -24,32 +24,29 @@ public sealed class Lab78Control : UserControl
     private readonly TextBox odeStep = Box("0.01");
     private readonly DataGridView derivativeGrid = Grid();
     private readonly DataGridView odeGrid = Grid();
-    private readonly PlotPanel integralPlot = new();
-    private readonly PlotPanel derivativePlot = new();
-    private readonly PlotPanel odePlot = new();
+    private readonly GraphControl graph = new();
     private readonly TextBox integralOutput = Output();
     private readonly TextBox derivativeOutput = Output();
     private readonly TextBox odeOutput = Output();
 
-    public Lab78Control()
+    protected Lab78Control(int section)
     {
         Font = new Font("Segoe UI", 9.5f);
-
-        var tabs = new TabControl { Dock = DockStyle.Fill };
-        tabs.TabPages.Add(BuildIntegralTab());
-        tabs.TabPages.Add(BuildDerivativeTab());
-        tabs.TabPages.Add(BuildOdeTab());
-        Controls.Add(tabs);
+        graph.Dock = DockStyle.Fill;
+        Controls.Add(section switch
+        {
+            7 => BuildIntegralTab(),
+            81 => BuildDerivativeTab(),
+            82 => BuildOdeTab(),
+            _ => throw new ArgumentOutOfRangeException(nameof(section))
+        });
     }
 
-    private TabPage BuildIntegralTab()
+    private Control BuildIntegralTab()
     {
-        var page = new TabPage("Лабораторная №7 — интеграл");
         var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Padding = new Padding(8) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 350));
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        page.Controls.Add(root);
-
         var left = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
         left.Controls.Add(Header("Метод левых прямоугольников"));
         left.Controls.Add(new Label { Text = "Функция: f(x) = x² − 3 − 2·cos(2πx)", AutoSize = true, MaximumSize = new Size(320, 0) });
@@ -65,20 +62,17 @@ public sealed class Lab78Control : UserControl
         var right = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 2 };
         right.RowStyles.Add(new RowStyle(SizeType.Percent, 65));
         right.RowStyles.Add(new RowStyle(SizeType.Percent, 35));
-        right.Controls.Add(integralPlot, 0, 0);
+        right.Controls.Add(graph, 0, 0);
         right.Controls.Add(new Label { Text = "График подынтегральной функции f(x)", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter }, 0, 1);
         root.Controls.Add(right, 1, 0);
-        return page;
+        return root;
     }
 
-    private TabPage BuildDerivativeTab()
+    private Control BuildDerivativeTab()
     {
-        var page = new TabPage("Лабораторная №8 — вторая производная");
         var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(8) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 365));
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        page.Controls.Add(root);
-
         var left = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
         left.Controls.Add(Header("Вариант задания №2 — вторая производная"));
         left.Controls.Add(new Label { Text = "f(x) = x² − 3 − 2·cos(2πx)\nf″(x) = 2 + 8π²·cos(2πx)", AutoSize = true });
@@ -86,6 +80,12 @@ public sealed class Lab78Control : UserControl
         left.Controls.Add(Field("Шаг h₁", h1));
         left.Controls.Add(Field("Шаг h₂", h2));
         left.Controls.Add(Field("Шаг h₃", h3));
+        left.Controls.Add(new Label
+        {
+            Text = "На графике: точное f″(x) — синяя кривая; формула 2-го порядка — красные точки; формула 4-го порядка — зелёные точки.",
+            AutoSize = true,
+            MaximumSize = new Size(335, 0)
+        });
         var run = new Button { Text = "Вычислить вторую производную", Width = 330, Height = 38 };
         run.Click += (_, _) => CalculateDerivative();
         left.Controls.Add(run);
@@ -94,18 +94,15 @@ public sealed class Lab78Control : UserControl
         derivativeGrid.Width = 335;
         left.Controls.Add(derivativeGrid);
         root.Controls.Add(left, 0, 0);
-        root.Controls.Add(derivativePlot, 1, 0);
-        return page;
+        root.Controls.Add(graph, 1, 0);
+        return root;
     }
 
-    private TabPage BuildOdeTab()
+    private Control BuildOdeTab()
     {
-        var page = new TabPage("Лабораторная №8 — ОДУ вариант 1");
         var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(8) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 420));
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        page.Controls.Add(root);
-
         var left = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
         left.Controls.Add(Header("ОДУ, таблица 3, вариант 1"));
         left.Controls.Add(new Label { Text = "y′ = sin(x + e^(x + y²));   y(0) = 1;   x ∈ [0; 1]", AutoSize = true });
@@ -119,8 +116,8 @@ public sealed class Lab78Control : UserControl
         odeGrid.Width = 390;
         left.Controls.Add(odeGrid);
         root.Controls.Add(left, 0, 0);
-        root.Controls.Add(odePlot, 1, 0);
-        return page;
+        root.Controls.Add(graph, 1, 0);
+        return root;
     }
 
     private void CalculateIntegral()
@@ -142,7 +139,10 @@ public sealed class Lab78Control : UserControl
         } while (error >= Eps && iterations < 30);
 
         integralOutput.Text = $"Интеграл ≈ {current:G15}\r\nОценка |I₂N − Iₙ| = {error:E6}\r\nУзлов: {n}\r\nИтераций: {iterations}";
-        integralPlot.SetSeries(new[] { Sample(F, a, b, 500) }, new[] { "f(x)" }, a, b);
+        graph.ClearAll();
+        graph.Curves.Add(new Curve(F, Color.RoyalBlue));
+        graph.FitTo(Enumerable.Range(0, 501)
+            .Select(i => (X: a + (b - a) * i / 500, Y: F(a + (b - a) * i / 500))));
     }
 
     private static double LeftRectangles(double a, double b, int n)
@@ -159,8 +159,6 @@ public sealed class Lab78Control : UserControl
         { MessageBox.Show("Введите x и три положительных шага h."); return; }
 
         double[] hs = { s1, s2, s3 };
-        var numericalPoints = new System.Collections.Generic.List<PointF[]>();
-        var numericalNames = new System.Collections.Generic.List<string>();
         derivativeGrid.Columns.Clear();
         derivativeGrid.Rows.Clear();
         derivativeGrid.Columns.Add("h", "Шаг h");
@@ -174,18 +172,20 @@ public sealed class Lab78Control : UserControl
             double d4 = (-F(x + 2 * h) + 16 * F(x + h) - 30 * F(x) + 16 * F(x - h) - F(x - 2 * h)) / (12 * h * h);
             double exact = ExactSecond(x);
             derivativeGrid.Rows.Add(h.ToString("G6"), d2.ToString("G12"), d4.ToString("G12"), exact.ToString("G12"));
-            numericalPoints.Add(new[] { new PointF((float)x, (float)d2) });
-            numericalNames.Add($"O(h²), h={h:G4}");
-            numericalPoints.Add(new[] { new PointF((float)x, (float)d4) });
-            numericalNames.Add($"O(h⁴), h={h:G4}");
             sb.AppendLine($"h={h:G6}: O(h²)={d2:G12}; O(h⁴)={d4:G12}; f″={exact:G12}");
         }
         derivativeOutput.Text = sb.ToString();
-        var allSeries = new System.Collections.Generic.List<PointF[]> { Sample(ExactSecond, 0, 1, 500) };
-        allSeries.AddRange(numericalPoints);
-        var allNames = new System.Collections.Generic.List<string> { "Аналитическая f″(x)" };
-        allNames.AddRange(numericalNames);
-        derivativePlot.SetSeries(allSeries.ToArray(), allNames.ToArray(), 0, 1);
+        graph.ClearAll();
+        graph.Curves.Add(new Curve(ExactSecond, Color.RoyalBlue));
+        for (int i = 0; i < hs.Length; i++)
+        {
+            double h = hs[i];
+            double d2 = (F(x + h) - 2 * F(x) + F(x - h)) / (h * h);
+            double d4 = (-F(x + 2 * h) + 16 * F(x + h) - 30 * F(x) + 16 * F(x - h) - F(x - 2 * h)) / (12 * h * h);
+            graph.Markers.Add(new Marker(x, d2, Color.Firebrick));
+            graph.Markers.Add(new Marker(x, d4, Color.ForestGreen));
+        }
+        graph.CenterAndZoom(x, ExactSecond(x), 40);
     }
 
     private void CalculateOde()
@@ -215,21 +215,13 @@ public sealed class Lab78Control : UserControl
             xs[i + 1] = x; ys[i + 1] = y;
         }
         odeOutput.Text = $"Метод Эйлера\r\nШаг: {h:G8}\r\nКоличество шагов: {n}\r\ny(1) ≈ {y:G15}";
-        odePlot.SetSeries(new[] { xs.Zip(ys, (xx, yy) => new PointF((float)xx, (float)yy)).ToArray() }, new[] { "Численное решение" }, 0, 1);
+        var points = xs.Zip(ys, (xx, yy) => (X: xx, Y: yy)).ToList();
+        graph.ClearAll();
+        graph.PointSets.Add(new PointSet(points, Color.RoyalBlue, Line: true));
+        graph.FitTo(points);
     }
 
     private static double OdeRight(double x, double y) => Math.Sin(x + Math.Exp(x + y * y));
-
-    private static PointF[] Sample(Func<double, double> f, double a, double b, int count)
-    {
-        var points = new PointF[count + 1];
-        for (int i = 0; i <= count; i++)
-        {
-            double x = a + (b - a) * i / count;
-            points[i] = new PointF((float)x, (float)f(x));
-        }
-        return points;
-    }
 
     private static TextBox Box(string value) => new() { Text = value, Width = 300 };
     private static TextBox Output() => new() { Multiline = true, ReadOnly = true, Width = 330, Height = 115, ScrollBars = ScrollBars.Vertical };
@@ -248,67 +240,17 @@ public sealed class Lab78Control : UserControl
         && double.IsFinite(value);
 }
 
-internal sealed class PlotPanel : Panel
+public sealed class Lab7Control : Lab78Control
 {
-    private PointF[][] _series = Array.Empty<PointF[]>();
-    private string[] _names = Array.Empty<string>();
-    private double _xmin, _xmax;
-    public PlotPanel()
-    {
-        Dock = DockStyle.Fill;
-        BackColor = Color.White;
-        BorderStyle = BorderStyle.FixedSingle;
-        DoubleBuffered = true;
-        ResizeRedraw = true;
-    }
-    public void SetSeries(PointF[][] series, string[] names, double xmin, double xmax)
-    {
-        _series = series; _names = names; _xmin = xmin; _xmax = xmax;
-        Invalidate();
-    }
-    protected override void OnPaint(PaintEventArgs e)
-    {
-        base.OnPaint(e);
-        var g = e.Graphics;
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        int left = 55, right = Width - 20, top = 25, bottom = Height - 45;
-        if (right <= left || bottom <= top) return;
-        g.DrawLine(Pens.Black, left, bottom, right, bottom);
-        g.DrawLine(Pens.Black, left, top, left, bottom);
-        g.DrawString("x", Font, Brushes.Black, right - 12, bottom + 8);
-        g.DrawString("y", Font, Brushes.Black, left - 25, top - 8);
-        if (_series.Length == 0) return;
+    public Lab7Control() : base(7) { }
+}
 
-        double ymin = double.PositiveInfinity, ymax = double.NegativeInfinity;
-        foreach (var s in _series) foreach (var p in s) { ymin = Math.Min(ymin, p.Y); ymax = Math.Max(ymax, p.Y); }
-        if (!double.IsFinite(ymin) || !double.IsFinite(ymax)) return;
-        if (Math.Abs(ymax - ymin) < 1e-12) { ymin -= 1; ymax += 1; }
-        double pad = (ymax - ymin) * 0.08; ymin -= pad; ymax += pad;
-        for (int k = 0; k <= 5; k++)
-        {
-            float px = left + (right - left) * k / 5f;
-            float py = top + (bottom - top) * k / 5f;
-            g.DrawLine(Pens.Gainsboro, px, top, px, bottom);
-            g.DrawLine(Pens.Gainsboro, left, py, right, py);
-            double xv = _xmin + (_xmax - _xmin) * k / 5.0;
-            double yv = ymax - (ymax - ymin) * k / 5.0;
-            g.DrawString(xv.ToString("G4"), Font, Brushes.Black, px - 14, bottom + 5);
-            g.DrawString(yv.ToString("G4"), Font, Brushes.Black, 2, py - 8);
-        }
-        Color[] colors = { Color.RoyalBlue, Color.Firebrick, Color.ForestGreen, Color.DarkOrange };
-        for (int j = 0; j < _series.Length; j++)
-        {
-            var pts = new PointF[_series[j].Length];
-            for (int i = 0; i < pts.Length; i++)
-            {
-                double xx = ( _series[j][i].X - _xmin) / (_xmax - _xmin);
-                double yy = (_series[j][i].Y - ymin) / (ymax - ymin);
-                pts[i] = new PointF((float)(left + xx * (right - left)), (float)(bottom - yy * (bottom - top)));
-            }
-            using var pen = new Pen(colors[j % colors.Length], 2);
-            if (pts.Length > 1) g.DrawLines(pen, pts);
-            else if (pts.Length == 1) g.FillEllipse(new SolidBrush(colors[j % colors.Length]), pts[0].X - 4, pts[0].Y - 4, 8, 8);
-            if (j < _names.Length) g.DrawString(_names[j], Font, new SolidBrush(colors[j % colors.Length]), left + 8, top + 5 + j * 18);
-        }
-    }
+public sealed class Lab81Control : Lab78Control
+{
+    public Lab81Control() : base(81) { }
+}
+
+public sealed class Lab82Control : Lab78Control
+{
+    public Lab82Control() : base(82) { }
 }
