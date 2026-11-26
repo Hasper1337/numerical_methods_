@@ -56,6 +56,7 @@ public abstract class Lab78Control : UserControl
         var run = new Button { Text = "Вычислить интеграл", Width = 300, Height = 38 };
         run.Click += (_, _) => CalculateIntegral();
         left.Controls.Add(run);
+        left.Controls.Add(CreateResetViewButton());
         left.Controls.Add(integralOutput);
         left.Controls.Add(new Label { Text = "Точность: ε = 10⁻⁴. Сетка удваивается до выполнения |I₂N − Iₙ| < ε.", AutoSize = true, MaximumSize = new Size(320, 0) });
         root.Controls.Add(left, 0, 0);
@@ -89,6 +90,7 @@ public abstract class Lab78Control : UserControl
         var run = new Button { Text = "Вычислить вторую производную", Width = 330, Height = 38 };
         run.Click += (_, _) => CalculateDerivative();
         left.Controls.Add(run);
+        left.Controls.Add(CreateResetViewButton());
         left.Controls.Add(derivativeOutput);
         derivativeGrid.Height = 210;
         derivativeGrid.Width = 335;
@@ -110,6 +112,7 @@ public abstract class Lab78Control : UserControl
         var run = new Button { Text = "Решить методом Эйлера", Width = 360, Height = 38 };
         run.Click += (_, _) => CalculateOde();
         left.Controls.Add(run);
+        left.Controls.Add(CreateResetViewButton());
         left.Controls.Add(new Label { Text = "Используется явная схема Эйлера. Все вычисления реализованы вручную, без библиотек численных методов.", AutoSize = true, MaximumSize = new Size(380, 0) });
         left.Controls.Add(odeOutput);
         odeGrid.Height = 330;
@@ -223,6 +226,13 @@ public abstract class Lab78Control : UserControl
     private static double OdeRight(double x, double y) => Math.Sin(x + Math.Exp(x + y * y));
 
     private static TextBox Box(string value) => new() { Text = value, Width = 300 };
+    private Button CreateResetViewButton()
+    {
+        var button = new Button { Text = "Сбросить вид", Width = 150, Height = 30 };
+        button.Click += (_, _) => graph.ResetView();
+        return button;
+    }
+
     private static TextBox Output() => new() { Multiline = true, ReadOnly = true, Width = 330, Height = 115, ScrollBars = ScrollBars.Vertical };
     private static DataGridView Grid() => new() { ReadOnly = true, AllowUserToAddRows = false, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
     private static Label Header(string text) => new() { Text = text, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold), Margin = new Padding(3, 8, 3, 12) };
