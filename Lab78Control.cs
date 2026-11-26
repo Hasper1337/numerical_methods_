@@ -28,6 +28,7 @@ public abstract class Lab78Control : UserControl
     private readonly TextBox integralOutput = Output();
     private readonly TextBox derivativeOutput = Output();
     private readonly TextBox odeOutput = Output();
+    private List<(double X, double Y)>? resetViewPoints;
 
     protected Lab78Control(int section)
     {
@@ -144,8 +145,10 @@ public abstract class Lab78Control : UserControl
         integralOutput.Text = $"Интеграл ≈ {current:G15}\r\nОценка |I₂N − Iₙ| = {error:E6}\r\nУзлов: {n}\r\nИтераций: {iterations}";
         graph.ClearAll();
         graph.Curves.Add(new Curve(F, Color.RoyalBlue));
-        graph.FitToBounds(Enumerable.Range(0, 501)
-            .Select(i => (X: a + (b - a) * i / 500, Y: F(a + (b - a) * i / 500))));
+        resetViewPoints = Enumerable.Range(0, 501)
+            .Select(i => (X: a + (b - a) * i / 500, Y: F(a + (b - a) * i / 500)))
+            .ToList();
+        graph.FitTo(resetViewPoints);
     }
 
     private static double LeftRectangles(double a, double b, int n)
@@ -187,7 +190,8 @@ public abstract class Lab78Control : UserControl
             sb.AppendLine($"h={h:G6}: O(h²)={d2:G12}; O(h⁴)={d4:G12}; f″={exact:G12}");
         }
         derivativeOutput.Text = sb.ToString();
-        graph.FitToBounds(plotPoints);
+        resetViewPoints = plotPoints;
+        graph.FitTo(resetViewPoints);
     }
 
     private void CalculateOde()
@@ -220,7 +224,8 @@ public abstract class Lab78Control : UserControl
         var points = xs.Zip(ys, (xx, yy) => (X: xx, Y: yy)).ToList();
         graph.ClearAll();
         graph.PointSets.Add(new PointSet(points, Color.RoyalBlue, Line: true));
-        graph.FitTo(points);
+        resetViewPoints = points;
+        graph.FitTo(resetViewPoints);
     }
 
     private static double OdeRight(double x, double y) => Math.Sin(x + Math.Exp(x + y * y));
@@ -229,7 +234,13 @@ public abstract class Lab78Control : UserControl
     private Button CreateResetViewButton()
     {
         var button = new Button { Text = "Сбросить вид", Width = 150, Height = 30 };
-        button.Click += (_, _) => graph.ResetView();
+        button.Click += (_, _) =>
+        {
+            if (resetViewPoints is null)
+                graph.ResetView();
+            else
+                graph.FitTo(resetViewPoints);
+        };
         return button;
     }
 
