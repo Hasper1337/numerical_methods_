@@ -141,7 +141,7 @@ public abstract class Lab78Control : UserControl
         integralOutput.Text = $"Интеграл ≈ {current:G15}\r\nОценка |I₂N − Iₙ| = {error:E6}\r\nУзлов: {n}\r\nИтераций: {iterations}";
         graph.ClearAll();
         graph.Curves.Add(new Curve(F, Color.RoyalBlue));
-        graph.FitTo(Enumerable.Range(0, 501)
+        graph.FitToBounds(Enumerable.Range(0, 501)
             .Select(i => (X: a + (b - a) * i / 500, Y: F(a + (b - a) * i / 500))));
     }
 
@@ -165,6 +165,11 @@ public abstract class Lab78Control : UserControl
         derivativeGrid.Columns.Add("d2", "Формула 2-го порядка");
         derivativeGrid.Columns.Add("d4", "Формула 4-го порядка");
         derivativeGrid.Columns.Add("exact", "Точное f″(x)");
+        graph.ClearAll();
+        graph.Curves.Add(new Curve(ExactSecond, Color.RoyalBlue));
+        var plotPoints = Enumerable.Range(0, 501)
+            .Select(i => (X: i / 500.0, Y: ExactSecond(i / 500.0)))
+            .ToList();
         var sb = new StringBuilder($"x = {x:G10}\r\n");
         foreach (double h in hs)
         {
@@ -172,20 +177,14 @@ public abstract class Lab78Control : UserControl
             double d4 = (-F(x + 2 * h) + 16 * F(x + h) - 30 * F(x) + 16 * F(x - h) - F(x - 2 * h)) / (12 * h * h);
             double exact = ExactSecond(x);
             derivativeGrid.Rows.Add(h.ToString("G6"), d2.ToString("G12"), d4.ToString("G12"), exact.ToString("G12"));
+            graph.Markers.Add(new Marker(x, d2, Color.Firebrick));
+            graph.Markers.Add(new Marker(x, d4, Color.ForestGreen));
+            plotPoints.Add((x, d2));
+            plotPoints.Add((x, d4));
             sb.AppendLine($"h={h:G6}: O(h²)={d2:G12}; O(h⁴)={d4:G12}; f″={exact:G12}");
         }
         derivativeOutput.Text = sb.ToString();
-        graph.ClearAll();
-        graph.Curves.Add(new Curve(ExactSecond, Color.RoyalBlue));
-        for (int i = 0; i < hs.Length; i++)
-        {
-            double h = hs[i];
-            double d2 = (F(x + h) - 2 * F(x) + F(x - h)) / (h * h);
-            double d4 = (-F(x + 2 * h) + 16 * F(x + h) - 30 * F(x) + 16 * F(x - h) - F(x - 2 * h)) / (12 * h * h);
-            graph.Markers.Add(new Marker(x, d2, Color.Firebrick));
-            graph.Markers.Add(new Marker(x, d4, Color.ForestGreen));
-        }
-        graph.CenterAndZoom(x, ExactSecond(x), 40);
+        graph.FitToBounds(plotPoints);
     }
 
     private void CalculateOde()
