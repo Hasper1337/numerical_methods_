@@ -22,7 +22,8 @@ public record Marker(double X, double Y, Color Color, bool Star = false);
 public class GraphControl : Control
 {
     double cx, cy;            // мировые координаты центра области
-    double scale = 40;        // пикселей на единицу
+    double scaleX = 40;       // пикселей на единицу по X
+    double scaleY = 40;       // пикселей на единицу по Y
     bool panning;
     Point panStart;
     double panCx, panCy;
@@ -56,7 +57,7 @@ public class GraphControl : Control
     {
         cx = x;
         cy = y;
-        scale = Math.Clamp(pixelsPerUnit, 1e-6, 1e12);
+        scaleX = scaleY = Math.Clamp(pixelsPerUnit, 1e-6, 1e12);
         Invalidate();
     }
 
@@ -73,11 +74,26 @@ public class GraphControl : Control
         CenterAndZoom((minX + maxX) / 2, (minY + maxY) / 2, Math.Min(sx, sy));
     }
 
+    /// <summary>Fits the full data bounds independently to both axes.</summary>
+    public void FitToBounds(IEnumerable<(double X, double Y)> points)
+    {
+        var list = points.ToList();
+        if (list.Count == 0) { ResetView(); return; }
+        double minX = list.Min(p => p.X), maxX = list.Max(p => p.X);
+        double minY = list.Min(p => p.Y), maxY = list.Max(p => p.Y);
+        double w = Math.Max(Width, 300), h = Math.Max(Height, 200);
+        cx = (minX + maxX) / 2;
+        cy = (minY + maxY) / 2;
+        scaleX = Math.Clamp(w * 0.8 / Math.Max(maxX - minX, 1e-9), 1e-6, 1e12);
+        scaleY = Math.Clamp(h * 0.8 / Math.Max(maxY - minY, 1e-9), 1e-6, 1e12);
+        Invalidate();
+    }
+
     // ---------- координаты ----------
-    float SX(double x) => (float)(Width / 2.0 + (x - cx) * scale);
-    float SY(double y) => (float)(Height / 2.0 - (y - cy) * scale);
-    double WX(double px) => cx + (px - Width / 2.0) / scale;
-    double WY(double py) => cy - (py - Height / 2.0) / scale;
+    float SX(double x) => (float)(Width / 2.0 + (x - cx) * scaleX);
+    float SY(double y) => (float)(Height / 2.0 - (y - cy) * scaleY);
+    double WX(double px) => cx + (px - Width / 2.0) / scaleX;
+    double WY(double py) => cy - (py - Height / 2.0) / scaleY;
     static bool Ok(float v) => Math.Abs(v) < 1e7;   // false для NaN, бесконечностей и огромных значений
 
     // ---------- мышь ----------
@@ -91,9 +107,11 @@ public class GraphControl : Control
     {
         base.OnMouseWheel(e);
         double wx = WX(e.X), wy = WY(e.Y);
-        scale = Math.Clamp(scale * (e.Delta > 0 ? 1.2 : 1 / 1.2), 1e-6, 1e12);
-        cx = wx - (e.X - Width / 2.0) / scale;      // точка под курсором остаётся на месте
-        cy = wy + (e.Y - Height / 2.0) / scale;
+        double zoom = e.Delta > 0 ? 1.2 : 1 / 1.2;
+        scaleX = Math.Clamp(scaleX * zoom, 1e-6, 1e12);
+        scaleY = Math.Clamp(scaleY * zoom, 1e-6, 1e12);
+        cx = wx - (e.X - Width / 2.0) / scaleX;     // точка под курсором остаётся на месте
+        cy = wy + (e.Y - Height / 2.0) / scaleY;
         Invalidate();
     }
 
@@ -111,8 +129,8 @@ public class GraphControl : Control
     {
         base.OnMouseMove(e);
         if (!panning) return;
-        cx = panCx - (e.X - panStart.X) / scale;
-        cy = panCy + (e.Y - panStart.Y) / scale;
+        cx = panCx - (e.X - panStart.X) / scaleX;
+        cy = panCy + (e.Y - panStart.Y) / scaleY;
         Invalidate();
     }
 
@@ -144,8 +162,10 @@ public class GraphControl : Control
 
     void DrawAxes(Graphics g)
     {
-        double step = NiceStep(80 / scale);
-        string fmt = "F" + Math.Max(0, (int)Math.Ceiling(-Math.Log10(step) - 1e-9));   // знаков после запятой
+        double xStep = NiceStep(80 / scaleX);
+        double yStep = NiceStep(80 / scaleY);
+        string xFmt = "F" + Math.Max(0, (int)Math.Ceiling(-Math.Log10(xStep) - 1e-9));
+        string yFmt = "F" + Math.Max(0, (int)Math.Ceiling(-Math.Log10(yStep) - 1e-9));
         float ax = Math.Clamp(SX(0), 0, Math.Max(0, Width - 45));    // оси прижимаются к краю,
         float ay = Math.Clamp(SY(0), 0, Math.Max(0, Height - 18));   // если начало координат ушло за экран
 
@@ -153,17 +173,17 @@ public class GraphControl : Control
         using var axis = new Pen(Color.Black, 1.5f);
         using var font = new Font(Font.FontFamily, 8f);
 
-        for (long i = (long)Math.Ceiling(WX(0) / step); i <= (long)Math.Floor(WX(Width) / step); i++)
+        for (long i = (long)Math.Ceiling(WX(0) / xStep); i <= (long)Math.Floor(WX(Width) / xStep); i++)
         {
-            float sx = SX(i * step);
+            float sx = SX(i * xStep);
             g.DrawLine(grid, sx, 0, sx, Height);
-            g.DrawString((i * step).ToString(fmt, CultureInfo.InvariantCulture), font, Brushes.Black, sx + 2, ay + 2);
+            g.DrawString((i * xStep).ToString(xFmt, CultureInfo.InvariantCulture), font, Brushes.Black, sx + 2, ay + 2);
         }
-        for (long i = (long)Math.Ceiling(WY(Height) / step); i <= (long)Math.Floor(WY(0) / step); i++)
+        for (long i = (long)Math.Ceiling(WY(Height) / yStep); i <= (long)Math.Floor(WY(0) / yStep); i++)
         {
-            float sy = SY(i * step);
+            float sy = SY(i * yStep);
             g.DrawLine(grid, 0, sy, Width, sy);
-            g.DrawString((i * step).ToString(fmt, CultureInfo.InvariantCulture), font, Brushes.Black, ax + 3, sy - 12);
+            g.DrawString((i * yStep).ToString(yFmt, CultureInfo.InvariantCulture), font, Brushes.Black, ax + 3, sy - 12);
         }
         g.DrawLine(axis, 0, ay, Width, ay);
         g.DrawLine(axis, ax, 0, ax, Height);
